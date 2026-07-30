@@ -12,3 +12,32 @@ Automated ETL pipeline built with Python, MySQL, and Streamlit to extract raw SE
    ```bash
    git clone https://github.com/Augustinek27/SECEDGAR
    cd "SECEDGAR"
+
+2. Create and install Python virtual environment:
+   ```bash
+   # Create virtual environment
+   python3 -m venv venv
+   
+   # Activate virtual environment
+   # On macOS/Linux:
+   # source venv/bin/activate
+   # On Windows:
+   venv\Scripts\activate
+   
+   # Install required packages
+   pip install -r requirements.txt
+
+3. Initialize MySQL Database
+mysql -u root -p < schema.sql
+
+4. Configure Environment Variables:
+Create a .env file in the root directory with this format:
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_mysql_password_here
+DB_NAME=capstone_financials
+
+5. Start the web application:
+   ```bash
+   streamlit run app.py
