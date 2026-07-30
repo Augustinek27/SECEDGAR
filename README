@@ -16,11 +16,9 @@ Automated ETL pipeline built with Python, MySQL, and Streamlit to extract raw SE
 2. Create and install Python virtual environment:
    ```bash
    # Create virtual environment
-   python3 -m venv venv
+   py -m venv venv
    
    # Activate virtual environment
-   # On macOS/Linux:
-   # source venv/bin/activate
    # On Windows:
    venv\Scripts\activate
    
