@@ -20,9 +20,9 @@ map_response = requests.get(map_url, headers=headers)
 
 if map_response.status_code == 200:
     ticker_map = map_response.json()
-    print("🎯 Master ticker map loaded successfully.")
+    print("Master ticker map loaded successfully.")
 else:
-    print("❌ Failed to download master map.")
+    print("Failed to download master map.")
     ticker_map = None
 
 # =====================================================================
@@ -31,15 +31,14 @@ else:
 def download_sec_json(target_ticker):
     """Downloads and saves SEC facts for a given ticker using the pre-loaded map."""
     if not ticker_map:
-        print(f"❌ Cannot process {target_ticker}: Master map unavailable.")
+        print(f"Cannot process {target_ticker}: Master map unavailable.")
         return False
         
     target_ticker = target_ticker.upper()
     filename = os.path.join(folder_name, f"{target_ticker}_facts.json")
     
-    # Optimization: If we already have the data locally, skip the network hit!
     if os.path.exists(filename):
-        print(f"ℹ️ {target_ticker} local file already exists. Skipping download.")
+        print(f"ℹ{target_ticker} local file already exists. Skipping download.")
         return True
 
     print(f"\nLooking up CIK for '{target_ticker}'...")
@@ -50,7 +49,7 @@ def download_sec_json(target_ticker):
             break
             
     if padded_cik:
-        print(f"🎯 Found CIK: {padded_cik}")
+        print(f"Found CIK: {padded_cik}")
         facts_url = f"https://data.sec.gov/api/xbrl/companyfacts/CIK{padded_cik}.json"
         print(f"Fetching financial facts from {facts_url}...")
         
@@ -65,20 +64,19 @@ def download_sec_json(target_ticker):
             with open(filename, "w") as f:
                 json.dump(company_facts, f, indent=4)
                 
-            print(f"🚀 SUCCESS! {target_ticker} data safely tucked away!")
+            print(f"SUCCESS! {target_ticker} data safely tucked away!")
             return True
         else:
-            print(f"❌ Failed to pull facts payload for {target_ticker}. Status: {facts_response.status_code}")
+            print(f"Failed to pull facts payload for {target_ticker}. Status: {facts_response.status_code}")
             return False
     else:
-        print(f"❌ Ticker '{target_ticker}' not found in SEC master map.")
+        print(f"Ticker '{target_ticker}' not found in SEC master map.")
         return False
 
 # =====================================================================
 # BATCH EXECUTION TESTING BLOCK
 # =====================================================================
 if __name__ == "__main__":
-    # Test your new loop capability here
     test_watchlist = ["NVDA", "AMZN", "MU"]
     
     print(f"\n🎬 Starting batch download for: {test_watchlist}")
