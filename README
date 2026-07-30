@@ -26,7 +26,7 @@ Automated ETL pipeline built with Python, MySQL, and Streamlit to extract raw SE
    pip install -r requirements.txt
 
 3. Initialize MySQL Database
-mysql -u root -p < schema.sql
+Open the schema.sql file in MySQL Workbench, and run the file.
 
 4. Configure Environment Variables:
 Create a .env file in the root directory with this format:
