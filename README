@@ -1,0 +1,14 @@
+Automated ETL pipeline built with Python, MySQL, and Streamlit to extract raw SEC EDGAR XBRL payloads, compute financial metrics, and load them into a relational schema for Power BI visualization.
+
+## Project Structure
+* `EDGARClient.py` - Network extraction module fetching raw SEC XBRL payloads.
+* `load_to_db.py` - Transformation engine parsing GAAP facts and loading metrics into MySQL.
+* `app.py` - Interactive Streamlit web portal for pipeline orchestration and live database preview.
+* `schema.sql` - Relational database schema creation script.
+
+## Quick Start Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Augustinek27/SECEDGAR
+   cd "SECEDGAR"
