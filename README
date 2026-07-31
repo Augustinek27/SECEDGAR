@@ -1,41 +1,89 @@
+# SEC EDGAR Corporate Financial Performance & Regional Dashboard
+
 Automated ETL pipeline built with Python, MySQL, and Streamlit to extract raw SEC EDGAR XBRL payloads, compute financial metrics, and load them into a relational schema for Power BI visualization.
 
+## Features
+
+* SEC Ticker Search: Interactive Streamlit web interface to search, extract, and transform live SEC EDGAR XBRL data.
+* Financial Trajectory Analysis: Multi-year trend analysis for Revenue, Net Income, Operating Margins, and ROIC.
+* Solvency & Capital Structure: Time-series visibility into Debt-to-Equity, Current Ratio, and Interest Coverage.
+* Geographic Breakdown: Interactive Treemap and Donut chart showing regional revenue allocation.
+* Relational Database Backend: Automated MySQL schema with foreign key constraints and cascade rules.
+
 ## Project Structure
-* `EDGARClient.py` - Network extraction module fetching raw SEC XBRL payloads.
-* `load_to_db.py` - Transformation engine parsing GAAP facts and loading metrics into MySQL.
-* `app.py` - Interactive Streamlit web portal for pipeline orchestration and live database preview.
-* `schema.sql` - Relational database schema creation script.
 
-## Quick Start Setup
+* EDGARClient.py - Network extraction module fetching raw SEC XBRL payloads.
+* load_to_db.py - Transformation engine parsing GAAP facts and loading metrics into MySQL.
+* app.py - Interactive Streamlit web portal for pipeline orchestration and live database preview.
+* schema.sql - Relational database schema creation script.
+* SEC_EDGAR_Dashboard.pbix - Final interactive Power BI reporting dashboard.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Augustinek27/SECEDGAR
-   cd "SECEDGAR"
+## Prerequisites & System Requirements
 
-2. Create and install Python virtual environment:
-   ```bash
-   # Create virtual environment
-   py -m venv venv
-   
-   # Activate virtual environment
-   # On Windows:
-   venv\Scripts\activate
-   
-   # Install required packages
-   pip install -r requirements.txt
+This project is built natively for Windows 10/11 (Power BI Desktop is a Windows-only application). Ensure you have the following software installed before running the project:
 
-3. Initialize MySQL Database
-Open the schema.sql file in MySQL Workbench, and run the file.
+1. MySQL Server & MySQL Workbench
+   * Download the MySQL Installer for Windows from the official MySQL website.
+   * Note down your MySQL root password during setup.
 
-4. Configure Environment Variables:
-Create a .env file in the root directory with this format:
+2. Power BI Desktop
+   * Download and install Power BI Desktop for free via the Microsoft Store on Windows.
+
+3. Python 3.10+ & Git
+   * Ensure "Add Python to PATH" is checked during Python installation.
+
+---
+
+## Step-by-Step Setup Guide (Windows)
+
+### Step 1: Clone the Repository
+Open Command Prompt or PowerShell and run:
+
+git clone https://github.com/Augustinek27/SECEDGAR
+cd SECEDGAR
+
+### Step 2: Install Python Dependencies
+Install required packages directly:
+
+pip install -r requirements.txt
+
+(Optional) If you prefer using a virtual environment:
+py -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+### Step 3: Initialize MySQL Database
+1. Open MySQL Workbench and log into your local MySQL instance.
+2. Go to File -> Open SQL Script... and select schema.sql from the project folder.
+3. Click the Lightning Bolt icon (Execute) to create the capstone_financials database and relational tables.
+
+Alternatively, run via Command Prompt:
+mysql -u root -p < schema.sql
+
+### Step 4: Configure Environment Variables
+Create a file named .env in the root directory of the project with the following configuration:
 
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_mysql_password_here
 DB_NAME=capstone_financials
 
-5. Start the web application:
-   ```bash
+### Step 5: Run Streamlit & Ingest Data
+1. Start the Streamlit application:
    streamlit run app.py
+
+2. In the web interface, search for target company tickers to extract SEC EDGAR financial metrics and populate your local MySQL database.
+
+### Step 6: Launch Power BI Dashboard
+1. Double-click SEC_EDGAR_Dashboard.pbix to open the dashboard in Power BI Desktop.
+2. If prompted for database credentials, enter your local MySQL username (root) and password.
+3. Click Refresh in the top ribbon to load the newly ingested database contents into the visuals.
+
+---
+
+## Database Architecture
+
+The backend database utilizes a relational structure enforcing composite keys and cascade integrity:
+
+* company_metrics: Stores primary financial indicators per ticker per fiscal year (PRIMARY KEY (ticker, year)).
+* regional_revenue: Holds geographic revenue breakdowns linked via composite foreign key (FOREIGN KEY (ticker, year) REFERENCES company_metrics(ticker, year) ON DELETE CASCADE).
