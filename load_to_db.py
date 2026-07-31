@@ -1,9 +1,11 @@
 import os
 import json
 import pandas as pd
+import random
 import mysql.connector
 from dotenv import load_dotenv
 
+load_dotenv()
 
 # MySQL Database Configuration
 MYSQL_CONFIG = {
@@ -12,6 +14,66 @@ MYSQL_CONFIG = {
     'password': os.getenv('DB_PASSWORD', ''),
     'database': os.getenv('DB_NAME', 'capstone_financials')
 }
+
+US_REGIONS = ["Northeast", "Midwest", "Southeast", "Southwest", "Pacific NW", "West"]
+
+def generate_regional_split(conn, ticker: str):
+    """Calculates proportional regional revenue summing to top-line revenue."""
+    cursor = conn.cursor(dictionary=True)
+    
+    # Check/Create table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS regional_revenue (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            ticker VARCHAR(10) NOT NULL,
+            year INT NOT NULL,
+            region VARCHAR(50) NOT NULL,
+            revenue_billions DECIMAL(12, 2) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_ticker_year_region (ticker, year, region)
+        );
+    """)
+    conn.commit()
+    
+    # Fetch top-line revenue rows
+    cursor.execute("SELECT year, revenue_billions FROM company_metrics WHERE ticker = %s", (ticker,))
+    records = cursor.fetchall()
+    
+    if not records:
+        cursor.close()
+        return
+
+    insert_records = []
+    for row in records:
+        year = row['year']
+        total_revenue = float(row['revenue_billions'] or 0.0)
+        if total_revenue == 0:
+            continue
+            
+        raw_weights = [random.uniform(0.5, 2.5) for _ in US_REGIONS]
+        weight_sum = sum(raw_weights)
+        running_sum = 0.0
+        
+        for i, region in enumerate(US_REGIONS):
+            if i == len(US_REGIONS) - 1:
+                regional_rev = round(total_revenue - running_sum, 2)
+            else:
+                normalized_weight = raw_weights[i] / weight_sum
+                regional_rev = round(total_revenue * normalized_weight, 2)
+                running_sum += regional_rev
+                
+            insert_records.append((ticker, year, region, regional_rev))
+
+    query = """
+    INSERT INTO regional_revenue (ticker, year, region, revenue_billions)
+    VALUES (%s, %s, %s, %s)
+    ON DUPLICATE KEY UPDATE revenue_billions = VALUES(revenue_billions);
+    """
+    if insert_records:
+        cursor.executemany(query, insert_records)
+        conn.commit()
+        print(f"Generated {len(insert_records)} regional records for {ticker}.")
+    cursor.close()
 
 FOLDER_NAME = "EDGARClient/JSON_FILES"
 
@@ -150,3 +212,10 @@ def process_ticker_history(ticker):
         
     df = pd.DataFrame(processed_records).tail(10)
     pipe_dataframe_to_mysql(df, ticker)
+
+    try:
+        conn = mysql.connector.connect(**MYSQL_CONFIG)
+        generate_regional_split(conn, ticker)
+        conn.close()
+    except Exception as e:
+        print(f"Regional generation failed for {ticker}: {e}")

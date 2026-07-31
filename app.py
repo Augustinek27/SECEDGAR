@@ -2,7 +2,8 @@ import os
 import mysql.connector
 import pandas as pd
 import streamlit as st
-
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
 try:
     from EDGARClient import download_sec_json
@@ -97,14 +98,14 @@ if submit_button and user_input:
     if not tickers_to_process:
         st.info("No new tickers to process.")
     else:
-        st.info(f"🎬 Initiating background processing sequence for: {tickers_to_process}")
+        st.info(f"Initiating background processing sequence for: {tickers_to_process}")
         
         # Build a live progress container on screen
         status_box = st.container()
         
         for ticker in tickers_to_process:
             with status_box:
-                st.write(f"⚡ Processing **{ticker}**...")
+                st.write(f"Processing **{ticker}**...")
                 
                 # Step A: Inherited Network Extractor
                 download_success = download_sec_json(ticker)
@@ -113,13 +114,13 @@ if submit_button and user_input:
                     try:
                         # Step B: Inherited Transform and Load Engine
                         process_ticker_history(ticker)
-                        st.write(f"✅ **{ticker}** parsed and loaded successfully into MySQL!")
+                        st.write(f"**{ticker}** parsed and loaded successfully into MySQL!")
                     except Exception as e:
-                        st.error(f"❌ Transformation Layer error on {ticker}: {e}")
+                        st.error(f"Transformation Layer error on {ticker}: {e}")
                 else:
-                    st.error(f"❌ Extraction Layer failed for {ticker}.")
+                    st.error(f"Extraction Layer failed for {ticker}.")
         
-        st.success("🏁 Pipeline routine completed successfully!")
+        st.success("Pipeline routine completed successfully!")
         # Force rerun to update our dynamic inventory lists instantly from MySQL
         st.rerun()
 
