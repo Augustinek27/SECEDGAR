@@ -77,10 +77,15 @@ DB_NAME=capstone_financials
 
 2. In the web interface, search for target company tickers to extract SEC EDGAR financial metrics and populate your local MySQL database.
 
-### Step 6: Launch Power BI Dashboard
-1. Double-click SEC_EDGAR_Dashboard.pbix to open the dashboard in Power BI Desktop.
-2. If prompted for database credentials, enter your local MySQL username (root) and password.
-3. Click Refresh in the top ribbon to load the newly ingested database contents into the visuals.
+### Step 6: Open and View the Power BI Dashboard
+1. Double-click `SEC_EDGAR_Dashboard.pbix` to open it directly in **Power BI Desktop**.
+2. **Immediate Viewing:** The report comes pre-loaded with cached data for primary tickers, allowing you to interact with all multi-year trend charts, financial health scorecards, and regional revenue maps immediately without database configuration.
+3. **(Optional) Connecting to Your Local Database:**
+   * If you run the Streamlit pipeline (`app.py`) to fetch new tickers and want to refresh the report from your local MySQL instance:
+   * Go to **Home ➔ Transform Data ➔ Data Source Settings**.
+   * Change Source to `localhost` and select database `capstone_financials`.
+   * When prompted for credentials, select **Database** and enter your local MySQL username (`root`) and password.
+   * Click **Refresh** in the top ribbon to load your newly ingested data.
 
 ---
 
