@@ -25,6 +25,9 @@ This project is built natively for Windows 10/11 (Power BI Desktop is a Windows-
 1. MySQL Server & MySQL Workbench
    * Download the MySQL Installer for Windows from the official MySQL website.
    * Note down your MySQL root password during setup.
+   **MySQL Connector/NET (Required for Power BI)**
+   * Power BI Desktop requires the official MySQL database driver to communicate with MySQL databases.
+   * Download and install **MySQL Connector/NET** (version 8.0 or higher) from the official MySQL website prior to connecting Power BI to local instances.
 
 2. Power BI Desktop
    * Download and install Power BI Desktop for free via the Microsoft Store on Windows.
